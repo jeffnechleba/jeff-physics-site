@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jeff’s Physics Tutoring — Cheesy Retro Web + Calendly</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Press Start 2P', cursive;
+    color:#00ffcc;
+    background:
+      radial-gradient(circle at 30% 20%, #002 0%, transparent 40%),
+      radial-gradient(circle at 70% 10%, #113 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, #001 0%, transparent 50%),
+      #000;
+    image-rendering: pixelated;
+  }
+
+  .stars, .stars:before, .stars:after{
+    position:fixed; inset:0; content:""; z-index:-1;
+    background:transparent;
+    box-shadow:
+      10vw 10vh #fff, 20vw 30vh #0ff, 35vw 20vh #ff0, 50vw 15vh #f0f,
+      65vw 25vh #0ff, 80vw 10vh #fff, 15vw 60vh #ff0, 30vw 70vh #f0f,
+      45vw 65vh #fff, 60vw 50vh #0ff, 75vw 40vh #ff0, 90vw 55vh #f0f,
+      5vw 85vh #fff, 25vw 90vh #0ff, 55vw 85vh #ff0, 85vw 80vh #f0f;
+    opacity:.7;
+  }
+  .stars:before{ transform:scale(1.4); opacity:.5 }
+  .stars:after{ transform:scale(.7); opacity:.9 }
+
+  header{
+    text-align:center;
+    padding:26px 10px 18px;
+    background:linear-gradient(90deg, #ff00cc, #3333ff);
+    border-bottom:4px double #00ffff;
+    text-shadow:2px 2px #000;
+    box-shadow:0 0 18px #00ffff;
+    position:relative;
+    cursor:pointer;
+  }
+  header h1{ margin:0; font-size:22px; color:yellow; }
+  .blink{ animation:blink 1s steps(2) infinite }
+  @keyframes blink{ 50% { opacity:.35 } }
+  .tag{ margin:8px 0 0; font-size:12px; color:#fff; }
+
+  nav{
+    text-align:center; padding:10px 0; background:#111;
+    border-top:2px solid #00ffff; border-bottom:2px solid #00ffff;
+  }
+  nav a{
+    color:#00ffcc; text-decoration:none; margin:0 12px; font-size:12px;
+  }
+  nav a:hover{ color:yellow; text-shadow:0 0 10px yellow }
+
+  .marq{
+    background:#001a1a; border-top:3px dashed #0ff; border-bottom:3px dashed #0ff;
+    color:#0ff; font-size:12px; padding:4px 0;
+  }
+
+  main{ max-width:900px; margin:22px auto; padding:0 12px }
+
+  .panel{
+    background: rgba(0,0,40,.85);
+    border:3px ridge #00ffff;
+    box-shadow:0 0 18px #00ffff;
+    padding:20px;
+    margin:22px 0;
+  }
+  .panel h2{ margin:0 0 12px; color:#fffb91; text-shadow:2px 2px #000 }
+
+  .btn{
+    display:inline-block; padding:10px 16px; margin:10px 6px 0;
+    background:linear-gradient(90deg, yellow, #00ffcc);
+    color:#000; text-decoration:none; border:4px outset #00ffff;
+    box-shadow:0 0 10px #00ffff; font-size:12px;
+  }
+  .btn:hover{ filter:brightness(1.1) }
+
+  table{
+    width:100%; border-collapse:collapse; font-size:12px; background:#02023a;
+    border:4px groove #00ffff; box-shadow:0 0 12px #00ffff;
+  }
+  th,td{ padding:10px; border:2px dashed #00ffff; color:#ccfff6; text-align:left }
+  th{ background:#0a0a66; color:#fffb91 }
+
+  .sticker-row{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin:10px 0 0 }
+  .sticker{ width:96px; height:96px; filter:drop-shadow(0 0 10px #0ff) }
+
+  .badge{
+    position:absolute; right:8px; top:8px; display:flex; align-items:center; gap:6px;
+    background:#000; border:3px dashed yellow; color:yellow; padding:6px 10px; font-size:10px;
+    box-shadow:0 0 10px #ff0;
+  }
+
+  .counter-wrap{ display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; }
+  .counter-label{ font-size:10px; color:#fffb91 }
+  .counter{ display:inline-flex; gap:2px; padding:4px 6px; background:#001a1a; border:3px inset #00ffff; box-shadow:0 0 10px #00ffff; }
+  .digit{ min-width:12px; padding:4px 2px; background:linear-gradient(#eaffff, #77ffff); color:#002; border:2px outset #aaffff; border-radius:2px; font-size:12px; }
+
+  footer{
+    text-align:center; padding:18px; font-size:10px; color:#00cccc;
+    border-top:2px solid #00ffff; margin-top:28px;
+  }
+
+  .apple{
+    position:fixed; top:-80px; left:50%; transform:translateX(-50%);
+    width:48px; height:48px; pointer-events:none;
+    filter:drop-shadow(0 0 10px #ff0);
+    z-index:1000;
+  }
+  .drop{ animation: fall 1.2s cubic-bezier(.2,.8,.2,1) forwards,
+               wobble .7s .95s ease-out 1; }
+  @keyframes fall{
+    0%   { transform:translate(-50%, -80px) rotate(0deg) }
+    70%  { transform:translate(-50%, calc(100vh - 180px)) rotate(20deg) }
+    85%  { transform:translate(-50%, calc(100vh - 210px)) rotate(-10deg) }
+    100% { transform:translate(-50%, calc(100vh - 180px)) rotate(6deg) }
+  }
+  @keyframes wobble{
+    0%{ transform:translate(-50%, calc(100vh - 180px)) rotate(6deg) }
+    50%{ transform:translate(-50%, calc(100vh - 175px)) rotate(-6deg) }
+    100%{ transform:translate(-50%, calc(100vh - 180px)) rotate(3deg) }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<header id="headerClick">
+  <div class="badge">
+    <svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M32 6l12 26H20L32 6z" fill="#ffa500" stroke="#000" stroke-width="2"/>
+      <rect x="10" y="40" width="44" height="6" fill="#ffd166" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="48" width="52" height="8" fill="#ffa500" stroke="#000" stroke-width="2"/>
+    </svg>
+    UNDER CONSTRUCTION
+  </div>
+  <h1 class="blink">✨ Jeff's RAD Physics Tutoring ✨</h1>
+  <div class="tag">“Unlock the Universe — One Equation at a Time”</div>
+
+  <div class="counter-wrap" aria-live="polite">
+    <span class="counter-label">You are visitor #</span>
+    <span id="counter" class="counter" title="Totally real, very official 90s hit counter"></span>
+  </div>
+</header>
+
+<div class="marq">
+  <marquee behavior="scroll" direction="left" scrollamount="5">
+    🚀 NOW BOOKING • AP PHYSICS • COLLEGE PHYSICS • CONCEPTUAL PHYSICS • PITTSBURGH + ONLINE • SLIDING SCALE • Email: jeff@cosmicphysics.com
+  </marquee>
+</div>
+
+<nav>
+  <a href="#about">About</a>
+  <a href="#sessions">Sessions</a>
+  <a href="#gallery">GIF Gallery</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<main>
+  <section id="about" class="panel">
+    <h2>🪐 About</h2>
+    <p>I’m Jeff — a physics & philosophy grad helping students crack mechanics, E&M, waves, optics, and modern physics. The vibe is cheesy retro web, but the tutoring is deadly serious.</p>
+
+    <div class="sticker-row">
+      <svg class="sticker" viewBox="0 0 200 200" role="img" aria-label="Atom">
+        <defs>
+          <radialGradient id="core" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#fff"/>
+            <stop offset="100%" stop-color="#b8f2ff"/>
+          </radialGradient>
+        </defs>
+        <circle cx="100" cy="100" r="12" fill="url(#core)"/>
+        <g fill="none" stroke="#0ff" stroke-width="3">
+          <ellipse cx="100" cy="100" rx="70" ry="28"/>
+          <ellipse cx="100" cy="100" rx="70" ry="28" transform="rotate(60 100 100)"/>
+          <ellipse cx="100" cy="100" rx="70" ry="28" transform="rotate(120 100 100)"/>
+        </g>
+      </svg>
+      <svg class="sticker" viewBox="0 0 96 96" role="img" aria-label="Test tube">
+        <rect x="36" y="8" width="24" height="70" rx="10" fill="#003" stroke="#0ff" stroke-width="3"/>
+        <rect x="39" y="12" width="18" height="60" rx="8" fill="#0ff4"/>
+        <circle cx="48" cy="68" r="4" fill="#0ff"/>
+        <circle cx="48" cy="56" r="3" fill="#0ff"/>
+        <circle cx="48" cy="44" r="2" fill="#0ff"/>
+      </svg>
+      <svg class="sticker" viewBox="0 0 96 96" role="img" aria-label="Rocket">
+        <path d="M48 8c12 10 18 24 18 40 0 10-3 20-8 26H38c-5-6-8-16-8-26 0-16 6-30 18-40z" fill="#f0f" stroke="#0ff" stroke-width="3"/>
+        <circle cx="48" cy="36" r="8" fill="#0ff"/>
+        <path d="M38 74h20l-6 12H44z" fill="orange" stroke="#000" stroke-width="2"/>
+      </svg>
+      <svg class="sticker" viewBox="0 0 120 96" role="img" aria-label="Circuit">
+        <rect x="8" y="8" width="104" height="80" rx="10" fill="#02022a" stroke="#0ff" stroke-width="3"/>
+        <path d="M20 28h20l10-10 10 10h30" stroke="#ff0" stroke-width="3" fill="none"/>
+        <circle cx="20" cy="28" r="4" fill="#0ff"/>
+        <circle cx="50" cy="18" r="4" fill="#0ff"/>
+        <circle cx="60" cy="28" r="4" fill="#0ff"/>
+        <circle cx="90" cy="28" r="4" fill="#0ff"/>
+      </svg>
+    </div>
+  </section>
+
+  <section id="sessions" class="panel">
+    <h2>⚡ Sessions</h2>
+    <table>
+      <tr><th>Track</th><th>Topics</th><th>Format</th></tr>
+      <tr><td>Physics 1</td><td>Kinematics, Newton’s Laws, Energy, Momentum, Rotation</td><td>Zoom / In‑person</td></tr>
+      <tr><td>Physics 2</td><td>Fluids, Thermo, E&M, Optics, Modern</td><td>Zoom / In‑person</td></tr>
+      <tr><td>AP Prep</td><td>Unit review, FRQs, calculator fluency, test strategy</td><td>Intensive or weekly</td></tr>
+      <tr><td>Conceptual</td><td>Relativity, quantum ideas, problem‑solving labs</td><td>Weekly or drop‑in</td></tr>
+    </table>
+
+    <!-- Calendly popup trigger button -->
+    <a id="book-calendly" class="btn" href="#">Book with Calendly</a>
+
+    <!-- Optional: Inline embed (uncomment to use instead of popup) 
+    <div class="calendly-inline-widget" data-url="https://calendly.com/jeffnechleba/physics-tutoring-session?hide_landing_page_details=1&hide_gdpr_banner=1"
+         style="min-width:320px;height:720px;margin-top:14px;"></div>
+    -->
+  </section>
+
+  <section id="gallery" class="panel">
+    <h2>🖼️ GIF Gallery (CSS‑animated)</h2>
+    <p style="font-size:12px">Old‑web flair without external image links — everything below is drawn with CSS/SVG.</p>
+    <div class="sticker-row">
+      <svg class="sticker" viewBox="0 0 200 200" style="animation:spin 6s linear infinite">
+        <defs><radialGradient id="core2" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#ff9cff"/>
+        </radialGradient></defs>
+        <circle cx="100" cy="100" r="12" fill="url(#core2)"/>
+        <g fill="none" stroke="#ff9cff" stroke-width="3">
+          <ellipse cx="100" cy="100" rx="70" ry="28"/>
+          <ellipse cx="100" cy="100" rx="70" ry="28" transform="rotate(60 100 100)"/>
+          <ellipse cx="100" cy="100" rx="70" ry="28" transform="rotate(120 100 100)"/>
+        </g>
+      </svg>
+      <svg class="sticker" viewBox="0 0 120 120">
+        <rect x="8" y="8" width="104" height="104" rx="10" fill="#02022a" stroke="#0ff" stroke-width="3"/>
+        <circle id="ball" cx="60" cy="20" r="8" fill="#ff0">
+          <animate attributeName="cy" values="20;100;20" dur="1.4s" repeatCount="indefinite" keyTimes="0;0.5;1" calcMode="spline" keySplines=".3 .6 .3 1;.3 0 .3 1"/>
+        </circle>
+      </svg>
+      <svg class="sticker" viewBox="0 0 160 100">
+        <rect x="4" y="4" width="152" height="92" rx="8" fill="#031" stroke="#0f0" stroke-width="3"/>
+        <path id="wave" d="M8 50 Q 28 10, 48 50 T 88 50 T 128 50 T 168 50" fill="none" stroke="#0f0" stroke-width="3">
+          <animate attributeName="d" dur="2s" repeatCount="indefinite"
+            values="M8 50 Q 28 10, 48 50 T 88 50 T 128 50 T 168 50;
+                    M8 50 Q 28 90, 48 50 T 88 50 T 128 50 T 168 50;
+                    M8 50 Q 28 10, 48 50 T 88 50 T 128 50 T 168 50"/>
+        </path>
+      </svg>
+    </div>
+  </section>
+
+  <section id="contact" class="panel">
+    <h2>💾 Contact</h2>
+    <p>Email: <a href="mailto:jeff@cosmicphysics.com" style="color:yellow">jeff@cosmicphysics.com</a></p>
+    <p>Instagram: <span style="color:#fffb91">@cosmic.physics</span></p>
+    <a class="btn" href="mailto:jeff@cosmicphysics.com?subject=Tutoring%20Inquiry&body=Hi%20Jeff%2C%20I%27d%20like%20to%20book%20a%20session...">Email to Book</a>
+  </section>
+</main>
+
+<footer>© 1997–2025 Jeff’s Physics Tutoring • Made with 💾 and starlight</footer>
+
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+<script>
+  // Smooth scroll
+  document.querySelectorAll('nav a').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')){ e.preventDefault(); document.querySelector(href)?.scrollIntoView({behavior:'smooth'}); }
+    });
+  });
+  // Spin keyframes (Safari)
+  const style = document.createElement('style'); style.textContent='@keyframes spin{to{transform:rotate(360deg)}}'; document.head.appendChild(style);
+
+  // Fake Hit Counter
+  (function(){
+    const baseKey = 'jpt_counter_base';
+    const countKey = 'jpt_counter_count';
+    let base = parseInt(localStorage.getItem(baseKey),10);
+    if(isNaN(base)){ base = Math.floor(3000 + Math.random()*6000); localStorage.setItem(baseKey, String(base)); }
+    let count = parseInt(localStorage.getItem(countKey),10);
+    if(isNaN(count)) count = 0;
+    count += 1 + Math.floor(Math.random()*3);
+    localStorage.setItem(countKey, String(count));
+    const total = base + count;
+    const digits = String(total).padStart(6,'0').split('');
+    const el = document.getElementById('counter');
+    el.innerHTML = '';
+    digits.forEach(d => { const span = document.createElement('span'); span.className = 'digit'; span.textContent = d; el.appendChild(span); });
+  })();
+
+  // Calendly popup
+  document.getElementById('book-calendly')?.addEventListener('click', function(e){
+    e.preventDefault();
+    Calendly.initPopupWidget({
+      url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00'
+    });
+    return false;
+  });
+
+  // Floating badge CTA
+  window.addEventListener('load', function(){
+    Calendly.initBadgeWidget({
+      url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00',
+      text: 'Schedule with Jeff',
+      color: '#ffff00',
+      textColor: '#000000',
+      branding: false
+    });
+  });
+
+  // Newton's Apple Easter Egg
+  const header = document.getElementById('headerClick');
+  header.addEventListener('click', () => {
+    const n = 1 + Math.floor(Math.random()*3);
+    for(let i=0;i<n;i++){ spawnApple( (i*200) + Math.random()*120 ); }
+  });
+  function spawnApple(delayMs){
+    const apple = document.createElement('div');
+    apple.className = 'apple';
+    apple.style.left = (10 + Math.random()*80) + 'vw';
+    apple.style.animationDelay = (delayMs/1000)+'s';
+    apple.innerHTML = `
+      <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+        <defs>
+          <radialGradient id="g" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#fff5f5"/>
+            <stop offset="100%" stop-color="#ff3b3b"/>
+          </radialGradient>
+        </defs>
+        <path d="M32 14c-6 0-10 4-12 8-5 10 0 22 12 28 12-6 17-18 12-28-2-4-6-8-12-8z" fill="url(#g)" stroke="#600" stroke-width="2"/>
+        <path d="M32 14c2-6 7-8 12-8-2 6-7 8-12 8z" fill="#7f4" stroke="#284" stroke-width="2"/>
+        <rect x="30" y="10" width="4" height="8" rx="2" fill="#531"/>
+        <path d="M36 10c8 0 12 4 12 8-8 0-12-4-12-8z" fill="#7f4" stroke="#284" stroke-width="2"/>
+      </svg>
+    `;
+    document.body.appendChild(apple);
+    requestAnimationFrame(()=>{ apple.classList.add('drop'); });
+    apple.addEventListener('animationend', ()=>{ setTimeout(()=>apple.remove(), 700); });
+  }
+</script>
+</body>
+</html>
