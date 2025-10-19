@@ -3,66 +3,258 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Big Ideas in Physics — Cosmic Physics</title>
+<title>The Lab Notebook — Cosmic Physics</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
+  :root{
+    --neon:#00ffcc;
+    --ink:#fffb91;
+    --paper:#061122;
+    --line:#0a2a44;
+  }
   html,body{margin:0;padding:0}
   body{
     font-family:'Press Start 2P', cursive;
-    color:#00ffcc;
+    color:var(--neon);
     background:
       radial-gradient(circle at 30% 20%, #002 0%, transparent 40%),
       radial-gradient(circle at 70% 10%, #113 0%, transparent 45%),
       radial-gradient(circle at 50% 90%, #001 0%, transparent 50%),
       #000;
+    image-rendering: pixelated;
   }
-  header{ text-align:center; padding:24px 10px; background:linear-gradient(90deg,#ff00cc,#3333ff);
-    border-bottom:4px double #00ffff; text-shadow:2px 2px #000; box-shadow:0 0 18px #00ffff; }
+
+  /* star sprinkle background (subtle) */
+  .stars, .stars:before, .stars:after{
+    position:fixed; inset:0; content:""; z-index:-2;
+    background:transparent;
+    box-shadow:
+      10vw 10vh #fff, 20vw 30vh #0ff, 35vw 20vh #ff0, 50vw 15vh #f0f,
+      65vw 25vh #0ff, 80vw 10vh #fff, 15vw 60vh #ff0, 30vw 70vh #f0f,
+      45vw 65vh #fff, 60vw 50vh #0ff, 75vw 40vh #ff0, 90vw 55vh #f0f,
+      5vw 85vh #fff, 25vw 90vh #0ff, 55vw 85vh #ff0, 85vw 80vh #f0f;
+    opacity:.35;
+  }
+  .stars:before{ transform:scale(1.4); opacity:.25 }
+  .stars:after{ transform:scale(.7); opacity:.45 }
+
+  header{
+    text-align:center;
+    padding:24px 10px 16px;
+    background:linear-gradient(90deg, #ff00cc, #3333ff);
+    border-bottom:4px double #00ffff;
+    text-shadow:2px 2px #000;
+    box-shadow:0 0 18px #00ffff;
+    position:relative;
+  }
   header h1{ margin:0; color:yellow; font-size:22px }
-  nav{ text-align:center; padding:10px 0; background:#111; border-top:2px solid #00ffff; border-bottom:2px solid #00ffff; }
-  nav a{ color:#00ffcc; text-decoration:none; margin:0 12px; font-size:12px }
+  header .tag{ color:#fff; margin-top:8px; font-size:12px }
+
+  nav{
+    text-align:center; padding:10px 0; background:#111;
+    border-top:2px solid #00ffff; border-bottom:2px solid #00ffff;
+  }
+  nav a{ color:var(--neon); text-decoration:none; margin:0 12px; font-size:12px }
   nav a:hover{ color:yellow; text-shadow:0 0 10px yellow }
-  main{ max-width:900px; margin:24px auto; padding:0 14px }
-  section{ background:rgba(0,0,40,.85); border:3px ridge #00ffff; box-shadow:0 0 18px #00ffff; padding:18px; margin:18px 0 }
-  h2{ color:#fffb91; margin-top:0; text-shadow:2px 2px #000 }
-  h3{ color:#b0ffea }
-  code,pre{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#001a1a; color:#b7fff6; padding:2px 6px; border-radius:6px }
-  .tip{ font-size:12px; opacity:.9 }
+
+  /* Notebook container */
+  .notebook{
+    max-width: 960px;
+    margin:24px auto;
+    padding:0 14px 60px;
+    position:relative;
+  }
+
+  /* Spiral binding effect */
+  .spiral{
+    position:absolute; left:-6px; top:-6px; bottom:-6px; width:42px;
+    display:flex; flex-direction:column; gap:16px; align-items:center; justify-content:flex-start;
+    filter: drop-shadow(0 0 8px #00ffffaa);
+  }
+  .coil{
+    width:28px; height:28px; border:4px solid var(--neon); border-radius:50%;
+    background: #002;
+  }
+
+  /* Page look */
+  .page{
+    background: linear-gradient(#041223, #041223) padding-box,
+                repeating-linear-gradient(#0000, #0000 26px, var(--line) 27px, #0000 28px) border-box;
+    border:3px ridge #00ffff;
+    box-shadow:0 0 18px #00ffff;
+    padding:18px;
+    margin-left:44px;
+  }
+
+  /* Tabs (sections index) */
+  .tabs{
+    display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 18px;
+  }
+  .tab{
+    display:inline-block; padding:6px 10px; font-size:11px;
+    background:#001a1a; color:var(--ink);
+    border:3px outset #00ffff; text-decoration:none;
+    box-shadow:0 0 10px #00ffff77;
+  }
+  .tab:hover{ filter:brightness(1.1) }
+
+  /* Post styling */
+  .post{
+    background: rgba(0,0,40,.85);
+    border:3px groove #00ffff;
+    margin:18px 0;
+    padding:16px;
+    box-shadow:0 0 14px #00ffffaa;
+  }
+  .post h2{ margin:0 0 8px; color:var(--ink); text-shadow:2px 2px #000; font-size:18px }
+  .meta{ font-size:10px; color:#aaf; margin-bottom:8px }
+  .summary{ font-size:12px; color:#ccfff6 }
+
+  /* Problem blocks */
+  pre, code{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background:#001a1a; color:#b7fff6;
+    border-radius:6px;
+  }
+  pre{
+    font-size:11px;
+    padding:10px 12px;
+    border:2px inset #00d0d0;
+    overflow:auto;
+  }
+  code{ padding:1px 4px }
+
+  /* Collapsible solutions */
+  details{
+    background:#010b14; border:2px dashed #00ffff; padding:10px; margin-top:10px;
+  }
+  details > summary{
+    cursor:pointer; color:yellow; font-size:12px;
+  }
+  details[open]{ box-shadow:0 0 12px #00ffff88 }
+
+  /* Divider */
+  .rule{ height:3px; background:linear-gradient(90deg,#00ffff,#ff00cc); margin:18px 0; opacity:.6 }
+
+  footer{
+    text-align:center; padding:18px; font-size:10px; color:#00cccc;
+    border-top:2px solid #00ffff; margin-top:28px;
+  }
+
+  /* Tiny helper button */
+  .btn{
+    display:inline-block; padding:8px 12px; margin:6px 6px 0;
+    background:linear-gradient(90deg, yellow, #00ffcc);
+    color:#000; text-decoration:none; border:4px outset #00ffff;
+    box-shadow:0 0 10px #00ffff; font-size:11px;
+  }
 </style>
 </head>
 <body>
+<div class="stars"></div>
+
 <header>
-  <h1>💡 Big Ideas in Physics</h1>
-  <div class="tip">Clear concepts • Problem‑solving frameworks • Worked examples</div>
+  <h1>🪐 The Lab Notebook</h1>
+  <div class="tag">Problems solved • Teaching reflections • Big-picture physics</div>
 </header>
+
 <nav>
   <a href="index.html">Home</a>
-  <a href="bigideas.html" style="color:yellow">Big Ideas</a>
-  <a href="mailto:jeff@cosmicphysics.org">Contact</a>
+  <a href="bigideas.html" style="color:yellow">Lab Notebook</a>
+  <a class="btn" href="mailto:jeff@cosmicphysics.org">Contact</a>
 </nav>
-<main>
-  <section>
-    <h2>⚙️ Problem‑Solving Framework</h2>
-    <ol>
-      <li>Sketch the situation. Choose a system.</li>
-      <li>List knowns/unknowns. Units and symbols.</li>
-      <li>Conservation first (energy, momentum, charge).</li>
-      <li>Model forces; draw a free‑body diagram.</li>
-      <li>Translate story → equations. Solve symbolically, then plug in.</li>
-      <li>Sanity checks: units, limits, orders of magnitude.</li>
-    </ol>
-  </section>
-  <section>
-    <h2>🚀 Worked Example — Projectile</h2>
-    <p>Launched at speed <em>v</em> and angle <em>θ</em>, the range (flat ground) is <code>R = v² sin(2θ) / g</code>. Peak happens at <code>t = v sinθ / g</code>.</p>
-  </section>
-  <section>
-    <h2>🧲 Big Idea — Fields & Potentials</h2>
-    <p>Thinking in fields turns many-body forces into local rules. Energy changes are path‑independent for conservative fields; potentials do the bookkeeping.</p>
-  </section>
+
+<main class="notebook">
+  <div class="spiral" aria-hidden="true">
+    <div class="coil"></div><div class="coil"></div><div class="coil"></div><div class="coil"></div>
+    <div class="coil"></div><div class="coil"></div><div class="coil"></div><div class="coil"></div>
+  </div>
+
+  <div class="page">
+    <!-- Notebook Tabs / Index (edit these links when you add posts) -->
+    <div class="tabs">
+      <a class="tab" href="#proj-range">Projectile Range (derivation)</a>
+      <a class="tab" href="#fbd-mastery">Free-Body Diagram Mastery</a>
+      <a class="tab" href="#energy-stories">Energy as a Story</a>
+    </div>
+
+    <!-- POST 1 -->
+    <section id="proj-range" class="post">
+      <h2>🎯 Projectile Range — derive once, use forever</h2>
+      <div class="meta">Posted: Oct 19, 2025 • Tags: kinematics, vectors</div>
+      <p class="summary">A quick derivation for the range on level ground. Know your assumptions, then reuse this elegantly.</p>
+      <pre><code>Given: launch speed v at angle θ; flat ground; ignore air resistance.
+We want: horizontal range R.
+Break velocity: vₓ = v cosθ, vᵧ = v sinθ.
+Time to return to y=0: t = 2 vᵧ / g.
+Range: R = vₓ · t = (v cosθ)(2 v sinθ / g) = v² sin(2θ) / g.</code></pre>
+      <details>
+        <summary>Show solution & checks</summary>
+        <ul style="font-size:12px; line-height:1.5">
+          <li><b>Units:</b> v²/g → (m²/s²)/(m/s²) = m ✅</li>
+          <li><b>Max range at θ=45°:</b> sin(90°)=1 → R<sub>max</sub>=v²/g ✅</li>
+          <li><b>Small-angle limit:</b> sin(2θ)≈2θ → R≈(2v²θ)/g ✅</li>
+        </ul>
+      </details>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- POST 2 -->
+    <section id="fbd-mastery" class="post">
+      <h2>🧰 Free‑Body Diagram Mastery — the 5‑line method</h2>
+      <div class="meta">Posted: Oct 19, 2025 • Tags: forces, newton-2</div>
+      <p class="summary">Stop guessing forces. Choose a system, choose axes, and let Newton’s 2nd law do the talking.</p>
+      <pre><code>1) Choose the system and draw only forces on it.
+2) Choose axes that simplify (e.g., along the incline).
+3) Write ΣF = m a along each axis.
+4) Connect constraints (no slip, rope taut → a's equal).
+5) Solve symbolically first; numbers second.</code></pre>
+      <details>
+        <summary>Example: block on incline (no friction)</summary>
+        <pre><code>Along-slope:  ΣF = m a  →  m g sinθ - N·0 = m a  →  a = g sinθ
+Normal:       ΣF = 0    →  N = m g cosθ</code></pre>
+      </details>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- POST 3 -->
+    <section id="energy-stories" class="post">
+      <h2>🔋 Energy is a Story (not just numbers)</h2>
+      <div class="meta">Posted: Oct 19, 2025 • Tags: energy, pedagogy</div>
+      <p class="summary">Teaching energy like bookkeeping misses the poetry. Tell the story: “Where did it come from? Where did it go?”</p>
+      <pre><code>Framework:
+• Define your system clearly (include/exclude Earth, springs, fields).
+• Identify transfers (work, heat) vs transformations (KE ↔ PE ↔ internal).
+• Write ΔE_system = W_on + Q, then track terms visually with arrows.</code></pre>
+      <details>
+        <summary>Mini-Example</summary>
+        <pre><code>Drop a mass from height h (no air):
+m g h (PE) → ½ m v² (KE).  Internal, Q, W_by hand = 0.</code></pre>
+      </details>
+    </section>
+
+    <!-- Add‑new‑post template (copy/paste and edit)
+    <section id="slug-here" class="post">
+      <h2>🧪 Title Here</h2>
+      <div class="meta">Posted: MMM DD, YYYY • Tags: topic, topic</div>
+      <p class="summary">One-sentence summary of why this matters.</p>
+      <pre><code>Problem statement or notes...</code></pre>
+      <details>
+        <summary>Show solution / notes</summary>
+        <pre><code>Derivation or steps...</code></pre>
+      </details>
+    </section>
+    -->
+
+    <div style="margin-top:16px">
+      <a class="btn" href="#top">Back to top</a>
+      <a class="btn" href="index.html">← Home</a>
+    </div>
+  </div>
 </main>
-<footer style="text-align:center;padding:18px;color:#00cccc;border-top:2px solid #00ffff">
-  © 2025 Cosmic Physics • <a href="index.html" style="color:#fffb91">Back to Home</a>
-</footer>
+
+<footer>© 2025 Cosmic Physics • Lab Notebook</footer>
 </body>
 </html>
