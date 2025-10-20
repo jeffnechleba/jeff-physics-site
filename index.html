@@ -6,6 +6,7 @@
 <title>Cosmic Physics — Tutoring</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 <style>
   html,body{margin:0;padding:0}
   body{
@@ -229,6 +230,17 @@
     requestAnimationFrame(()=>{ apple.classList.add('drop'); });
     apple.addEventListener('animationend', ()=>{ setTimeout(()=>apple.remove(), 700); });
   }
+</script>
+<script>
+  window.addEventListener('load', function() {
+    Calendly.initBadgeWidget({
+      url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_event_type_details=1&hide_gdpr_banner=1&background_color=0a0f1a&text_color=e7f6f2&primary_color=66f3e1',
+      text: '📅 Book a Session with Jeff',
+      color: '#66f3e1',
+      textColor: '#e7f6f2',
+      branding: false
+    });
+  });
 </script>
 </body>
 </html>
