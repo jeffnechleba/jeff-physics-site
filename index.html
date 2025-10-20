@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Calendly performance preconnects -->
+<link rel="dns-prefetch" href="https://assets.calendly.com">
+<link rel="dns-prefetch" href="https://calendly.com">
+<link rel="preconnect" href="https://assets.calendly.com" crossorigin>
+<link rel="preconnect" href="https://calendly.com" crossorigin>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Cosmic Physics — Tutoring</title>
@@ -232,15 +237,62 @@
   }
 </script>
 <script>
+  // Load Calendly badge faster and improve contrast
   window.addEventListener('load', function() {
-    Calendly.initBadgeWidget({
-      url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_event_type_details=1&hide_gdpr_banner=1&background_color=0a0f1a&text_color=e7f6f2&primary_color=66f3e1',
-      text: '📅 Book a Session with Jeff',
-      color: '#66f3e1',
-      textColor: '#e7f6f2',
-      branding: false
-    });
+    // initialize badge with calmer colors
+    function initBadge() {
+      Calendly.initBadgeWidget({
+        url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_event_type_details=1&hide_gdpr_banner=1&background_color=0d1512&text_color=eaf3e9&primary_color=3a9b5a',
+        text: '📅 Book a Session with Jeff',
+        color: '#3a9b5a',       // darker spring green for better readability
+        textColor: '#eaf3e9',   // light mint text for contrast
+        branding: false
+      });
+    }
+
+    // Calendly async load fallback
+    if (window.Calendly && Calendly.initBadgeWidget) {
+      initBadge();
+    } else {
+      const t = setInterval(() => {
+        if (window.Calendly && Calendly.initBadgeWidget) {
+          clearInterval(t);
+          initBadge();
+        }
+      }, 250);
+      setTimeout(() => clearInterval(t), 6000);
+    }
   });
+
+  // --- Performance boosts ---
+  // 1. Warm up Calendly on first hover or scroll
+  const warmCalendly = () => {
+    if (window.__calWarm) return;
+    window.__calWarm = true;
+    try {
+      Calendly?.initPopupWidget?.({
+        url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1'
+      });
+      Calendly?.closePopupWidget?.(); // closes immediately, preloads assets
+    } catch(e){}
+  };
+  window.addEventListener('mousemove', warmCalendly, { once: true });
+  window.addEventListener('touchstart', warmCalendly, { once: true });
+  window.addEventListener('scroll', warmCalendly, { once: true });
+
+  // 2. Idle prefetch: invisible inline widget to cache popup faster
+  function preloadCalendlyInline(){
+    if (document.getElementById('cal-preload')) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'cal-preload';
+    wrap.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;left:-9999px;top:-9999px;';
+    wrap.innerHTML = `
+      <div class="calendly-inline-widget"
+           data-url="https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1"
+           style="min-width:320px;height:400px;"></div>`;
+    document.body.appendChild(wrap);
+  }
+  (window.requestIdleCallback || function(cb){ setTimeout(cb, 1500); })(preloadCalendlyInline);
 </script>
 </body>
 </html>
