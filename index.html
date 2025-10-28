@@ -11,7 +11,7 @@
 <title>Cosmic Physics — Tutoring</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
-<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<!--<script src="https://assets.calendly.com/assets/external/widget.js" async></script>-->
 <style>
   html,body{margin:0;padding:0}
   body{
@@ -84,6 +84,15 @@
   .drop{ animation: fall 1.2s cubic-bezier(.2,.8,.2,1) forwards, wobble .7s .95s ease-out 1; }
   @keyframes fall{ 0%{ transform:translate(-50%, -80px) rotate(0deg) } 70%{ transform:translate(-50%, calc(100vh - 180px)) rotate(20deg) } 85%{ transform:translate(-50%, calc(100vh - 210px)) rotate(-10deg) } 100%{ transform:translate(-50%, calc(100vh - 180px)) rotate(6deg) } }
   @keyframes wobble{ 0%{ transform:translate(-50%, calc(100vh - 180px)) rotate(6deg) } 50%{ transform:translate(-50%, calc(100vh - 175px)) rotate(-6deg) } 100%{ transform:translate(-50%, calc(100vh - 180px)) rotate(3deg) } }
+
+  /* ADDED: tiny skeleton style for inline Calendly */
+  @keyframes cal-shimmer { 0%{background-position:100% 0} 100%{background-position:0 0} }
+  .cal-skeleton{
+    border-radius:16px;height:720px;width:100%;
+    background:linear-gradient(90deg,#001a1a 25%,#002b2b 37%,#001a1a 63%);
+    background-size:400% 100%;animation:cal-shimmer 1.25s infinite;
+    box-shadow:0 0 18px #00ffff;border:3px ridge #00ffff;
+  }
 </style>
 </head>
 <body>
@@ -159,12 +168,32 @@
     <h2>⚡ Sessions</h2>
     <table>
       <tr><th>Track</th><th>Topics</th><th>Format</th></tr>
-      <tr><td>Physics 1</td><td>Kinematics, Newton’s Laws, Energy, Momentum, Rotation</td><td>Zoom / In‑person</td></tr>
-      <tr><td>Physics 2</td><td>Fluids, Thermo, E&M, Optics, Modern</td><td>Zoom / In‑person</td></tr>
+      <tr><td>Physics 1</td><td>Kinematics, Newton’s Laws, Energy, Momentum, Rotation</td><td>Zoom / In-person</td></tr>
+      <tr><td>Physics 2</td><td>Fluids, Thermo, E&M, Optics, Modern</td><td>Zoom / In-person</td></tr>
       <tr><td>AP Prep</td><td>Unit review, FRQs, calculator fluency, test strategy</td><td>Intensive or weekly</td></tr>
-      <tr><td>Conceptual</td><td>Relativity, quantum ideas, problem‑solving labs</td><td>Weekly or drop‑in</td></tr>
+      <tr><td>Conceptual</td><td>Relativity, quantum ideas, problem-solving labs</td><td>Weekly or drop-in</td></tr>
     </table>
     <a id="book-calendly" class="btn" href="#">Book with Calendly</a>
+  </section>
+
+  <!-- ADDED: Inline Calendly calendar (colors match site) -->
+  <section id="booking" class="panel" aria-label="Book a session inline">
+    <h2>📅 Book a Session (Inline)</h2>
+
+    <!-- Skeleton shown while Calendly loads -->
+    <div id="calendly-skeleton" class="cal-skeleton" role="status" aria-label="Loading calendar…"></div>
+
+    <!-- Inline Calendly (renders once widget.js loads) -->
+    <div
+      id="calendly-inline"
+      class="calendly-inline-widget"
+      style="min-width:320px;height:720px;display:none;margin-top:12px;"
+      data-url="https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00">
+    </div>
+
+    <p style="font-size:10px;color:#ccfff6;margin-top:8px;">
+      Trouble loading? <a href="https://calendly.com/jeffnechleba/physics-tutoring-session" target="_blank" style="color:yellow;">Open in a new tab</a>.
+    </p>
   </section>
 
   <section id="contact" class="panel">
@@ -177,7 +206,9 @@
 
 <footer>© 2025 Cosmic Physics • Made with 💾 and starlight</footer>
 
+<!-- Keep ONE Calendly script include -->
 <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+
 <script>
   // Smooth scroll
   document.querySelectorAll('nav a').forEach(a => {
@@ -202,7 +233,7 @@
     el.innerHTML = '';
     digits.forEach(d => { const span = document.createElement('span'); span.className = 'digit'; span.textContent = d; el.appendChild(span); });
   })();
-  // Calendly popup
+  // Calendly popup (button in Sessions)
   document.getElementById('book-calendly')?.addEventListener('click', function(e){
     e.preventDefault();
     Calendly.initPopupWidget({
@@ -280,7 +311,31 @@
   window.addEventListener('touchstart', warmCalendly, { once: true });
   window.addEventListener('scroll', warmCalendly, { once: true });
 
-  // 2. Idle prefetch: invisible inline widget to cache popup faster
+  // 2. Inline loader control: show inline when Calendly injects the iframe
+  (function(){
+    const inline = document.getElementById('calendly-inline');
+    const skeleton = document.getElementById('calendly-skeleton');
+    const reveal = () => {
+      if (!inline) return;
+      const hasIframe = inline.querySelector('iframe');
+      if (hasIframe){
+        inline.style.display = 'block';
+        if (skeleton) skeleton.style.display = 'none';
+        return true;
+      }
+      return false;
+    };
+    // Poll briefly after load; Calendly renders shortly after widget.js is ready
+    let tries = 0;
+    const tick = () => {
+      if (reveal()) return;
+      if (tries++ < 40) setTimeout(tick, 150);
+    };
+    window.addEventListener('load', tick);
+  })();
+
+  // 3. Idle prefetch (HIDDEN inline) — DISABLED to avoid double-loading calendars
+  /*
   function preloadCalendlyInline(){
     if (document.getElementById('cal-preload')) return;
     const wrap = document.createElement('div');
@@ -293,6 +348,7 @@
     document.body.appendChild(wrap);
   }
   (window.requestIdleCallback || function(cb){ setTimeout(cb, 1500); })(preloadCalendlyInline);
+  */
 </script>
 </body>
 </html>
