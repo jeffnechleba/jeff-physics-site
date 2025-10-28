@@ -200,11 +200,48 @@
   </section>
 
   <section id="contact" class="panel">
-    <h2>💾 Contact</h2>
-    <p>Email: <a href="mailto:jeff@cosmicphysics.org" style="color:yellow">jeff@cosmicphysics.org</a></p>
-    <p>Instagram: <span style="color:#fffb91">@cosmic.physics</span></p>
-    <a class="btn" href="mailto:jeff@cosmicphysics.org?subject=Tutoring%20Inquiry&body=Hi%20Jeff%2C%20I%27d%20like%20to%20book%20a%20session...">Email to Book</a>
-  </section>
+  <h2>💾 Contact</h2>
+
+  <!-- Contact form handled by Formspree -->
+  <form
+    action="https://formspree.io/f/mnnopyae"
+    method="POST"
+    style="display:flex;flex-direction:column;gap:10px;max-width:420px;margin:auto;"
+  >
+    <label style="font-size:10px;color:#fffb91;">
+      Name:
+      <input type="text" name="name" required
+             style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
+                    font-family:'Press Start 2P',cursive;font-size:10px;">
+    </label>
+
+    <label style="font-size:10px;color:#fffb91;">
+      Email:
+      <input type="email" name="_replyto" required
+             style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
+                    font-family:'Press Start 2P',cursive;font-size:10px;">
+    </label>
+
+    <label style="font-size:10px;color:#fffb91;">
+      Message:
+      <textarea name="message" rows="4" required
+                style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
+                       font-family:'Press Start 2P',cursive;font-size:10px;"></textarea>
+    </label>
+
+    <button type="submit"
+            style="padding:10px;background:linear-gradient(90deg, yellow, #00ffcc);
+                   border:4px outset #00ffff;box-shadow:0 0 10px #00ffff;cursor:pointer;
+                   font-family:'Press Start 2P',cursive;font-size:10px;">
+      SEND MESSAGE
+    </button>
+  </form>
+
+  <p style="margin-top:10px;font-size:10px;color:#ccfff6;text-align:center;">
+    You can also email directly at <span style="color:yellow">jeff@cosmicphysics.org</span>
+  </p>
+</section>
+
 </main>
 
 <footer>© 2025 Cosmic Physics • Made with 💾 and starlight</footer>
