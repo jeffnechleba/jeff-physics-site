@@ -11,7 +11,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cosmic Physics — Tutoring</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+
+  <!-- Calendly CSS: preload then apply (faster first paint) -->
+  <link rel="preload" href="https://assets.calendly.com/assets/external/widget.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet"></noscript>
 
   <style>
     /* iOS scrolling safety */
@@ -210,19 +213,16 @@
       <!-- <a id="book-calendly" class="btn" href="#">Book with Calendly</a>-->
     </section>
 
-    <!-- Inline Calendly calendar -->
+    <!-- Lazy inline Calendly calendar -->
     <section id="booking" class="panel" aria-label="Book a session inline">
       <h2>📅 Book a Session</h2>
 
-      <!-- Skeleton while Calendly loads -->
-      <div id="calendly-skeleton" class="cal-skeleton" role="status" aria-label="Loading calendar…"></div>
-
-      <!-- Inline Calendly (renders once widget.js loads) -->
-      <div
-        id="calendly-inline"
-        class="calendly-inline-widget"
-        style="min-width:320px;height:720px;display:none;margin-top:12px;"
-        data-url="https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00">
+      <!-- Lazy target: skeleton + button until user scrolls/clicks -->
+      <div id="cal-slot" style="min-height:720px; margin-top:12px;">
+        <div id="cal-skeleton" class="cal-skeleton" role="status" aria-label="Loading calendar…"></div>
+        <button id="cal-load-btn" class="btn" style="display:block;margin:14px auto 0;text-align:center;">
+          Load Calendar
+        </button>
       </div>
 
       <p style="font-size:10px;color:#ccfff6;margin-top:8px;">
@@ -242,28 +242,28 @@
         <label style="font-size:10px;color:#fffb91;">
           Name:
           <input type="text" name="name" required
-                style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
-                      font-family:'Press Start 2P',cursive;font-size:10px;">
+                 style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
+                        font-family:'Press Start 2P',cursive;font-size:10px;">
         </label>
 
         <label style="font-size:10px;color:#fffb91;">
           Email:
           <input type="email" name="_replyto" required
-                style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
-                      font-family:'Press Start 2P',cursive;font-size:10px;">
+                 style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
+                        font-family:'Press Start 2P',cursive;font-size:10px;">
         </label>
 
         <label style="font-size:10px;color:#fffb91;">
           Message:
           <textarea name="message" rows="4" required
                     style="width:100%;padding:8px;border:2px solid #00ffff;background:#001;color:#00ffcc;
-                          font-family:'Press Start 2P',cursive;font-size:10px;"></textarea>
+                           font-family:'Press Start 2P',cursive;font-size:10px;"></textarea>
         </label>
 
         <button type="submit"
                 style="padding:10px;background:linear-gradient(90deg, yellow, #00ffcc);
-                      border:4px outset #00ffff;box-shadow:0 0 10px #00ffff;cursor:pointer;
-                      font-family:'Press Start 2P',cursive;font-size:10px;">
+                       border:4px outset #00ffff;box-shadow:0 0 10px #00ffff;cursor:pointer;
+                       font-family:'Press Start 2P',cursive;font-size:10px;">
           SEND MESSAGE
         </button>
       </form>
@@ -272,7 +272,7 @@
 
   <footer>© 2025 Cosmic Physics • Made with 💾 and starlight</footer>
 
-  <!-- Calendly widget JS (single include) -->
+  <!-- Calendly widget JS -->
   <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
   <script>
@@ -293,7 +293,7 @@
       let base=parseInt(localStorage.getItem(baseKey),10);
       if(isNaN(base)){ base=Math.floor(3000+Math.random()*6000); localStorage.setItem(baseKey,String(base)); }
       let count=parseInt(localStorage.getItem(countKey),10);
-      if(isNaN(count)) count=0;
+      if(isNaN(count))count=0;
       count += 1 + Math.floor(Math.random()*3);
       localStorage.setItem(countKey, String(count));
       const total=base+count;
@@ -331,23 +331,14 @@
       apple.addEventListener('animationend', ()=>{ setTimeout(()=>apple.remove(), 700); });
     }
 
-    /* Calendly popup (if you re-enable the button in Sessions) */
-    document.getElementById('book-calendly')?.addEventListener('click', function(e){
-      e.preventDefault();
-      Calendly.initPopupWidget({
-        url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00'
-      });
-      return false;
-    });
-
-    /* Floating Calendly badge — keep original neon scheme */
+    /* Floating Calendly badge — original neon scheme */
     window.addEventListener('load', function() {
       function initBadge() {
         Calendly.initBadgeWidget({
           url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_event_type_details=1&hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00',
           text: '📅 Book a Session with Jeff',
-          color: '#00ffcc',        // neon cyan badge to match site
-          textColor: '#000000',    // black text for contrast on cyan
+          color: '#00ffcc',
+          textColor: '#000000',
           branding: false
         });
       }
@@ -390,28 +381,67 @@
     }
     setTimeout(nukeCalendlyOverlay, 2000);
 
-    // Reveal the inline Calendly when its iframe is injected
+    /* ---- LAZY INLINE CALENDLY ---- */
     (function(){
-      const inline = document.getElementById('calendly-inline');
-      const skeleton = document.getElementById('calendly-skeleton');
-      const reveal = () => {
-        if (!inline) return false;
-        const hasIframe = inline.querySelector('iframe');
-        if (hasIframe){
-          inline.style.display = 'block';
-          if (skeleton) skeleton.style.display = 'none';
-          return true;
+      const SLOT = document.getElementById('cal-slot');
+      const SKELETON = document.getElementById('cal-skeleton');
+      const BTN = document.getElementById('cal-load-btn');
+      let mounted = false;
+
+      function mountInline(){
+        if (mounted) return;
+        mounted = true;
+
+        function doInit(){
+          try {
+            Calendly.initInlineWidget({
+              url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00',
+              parentElement: SLOT
+            });
+            // hide skeleton once iframe appears
+            const stop = setInterval(()=>{
+              if (SLOT.querySelector('iframe')){
+                if (SKELETON) SKELETON.style.display = 'none';
+                if (BTN) BTN.style.display = 'none';
+                clearInterval(stop);
+              }
+            }, 150);
+            setTimeout(()=>clearInterval(stop), 8000);
+          } catch(e) {
+            setTimeout(doInit, 200);
+          }
         }
-        return false;
-      };
-      let tries = 0;
-      const tick = () => {
-        if (reveal()) return;
-        if (tries++ < 40) setTimeout(tick, 150);
-      };
-      window.addEventListener('load', tick);
+
+        if (window.Calendly && Calendly.initInlineWidget) doInit();
+        else {
+          const t = setInterval(()=>{
+            if (window.Calendly && Calendly.initInlineWidget){
+              clearInterval(t); doInit();
+            }
+          }, 200);
+          setTimeout(()=>clearInterval(t), 6000);
+        }
+      }
+
+      // Load on button click
+      BTN?.addEventListener('click', mountInline);
+
+      // Load when visible (user scrolls near it)
+      if ('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{
+            if (e.isIntersecting) {
+              mountInline();
+              io.disconnect();
+            }
+          });
+        }, { rootMargin: '200px 0px' });
+        io.observe(SLOT);
+      } else {
+        // Fallback: time-based lazy init
+        window.addEventListener('load', ()=> setTimeout(mountInline, 1500));
+      }
     })();
   </script>
 </body>
 </html>
-
