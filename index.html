@@ -12,7 +12,7 @@
   <title>Cosmic Physics — Tutoring</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-  <!-- Calendly CSS: preload then apply (faster first paint) -->
+  <!-- Calendly CSS: preload then apply -->
   <link rel="preload" href="https://assets.calendly.com/assets/external/widget.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet"></noscript>
 
@@ -114,15 +114,6 @@
     @keyframes fall{ 0%{ transform:translate(-50%, -80px) rotate(0deg) } 70%{ transform:translate(-50%, calc(100vh - 180px)) rotate(20deg) } 85%{ transform:translate(-50%, calc(100vh - 210px)) rotate(-10deg) } 100%{ transform:translate(-50%, calc(100vh - 180px)) rotate(6deg) } }
     @keyframes wobble{ 0%{ transform:translate(-50%, calc(100vh - 180px)) rotate(6deg) } 50%{ transform:translate(-50%, calc(100vh - 175px)) rotate(-6deg) } 100%{ transform:translate(-50%, calc(100vh - 180px)) rotate(3deg) } }
 
-    /* Calendly inline skeleton */
-    @keyframes cal-shimmer { 0%{background-position:100% 0} 100%{background-position:0 0} }
-    .cal-skeleton{
-      border-radius:16px;height:720px;width:100%;
-      background:linear-gradient(90deg,#001a1a 25%,#002b2b 37%,#001a1a 63%);
-      background-size:400% 100%;animation:cal-shimmer 1.25s infinite;
-      box-shadow:0 0 18px #00ffff;border:3px ridge #00ffff;
-    }
-
     /* Ensure Calendly overlays never trap touch scrolling */
     .calendly-overlay, .calendly-popup, .calendly-popup-close { pointer-events:auto !important; }
   </style>
@@ -210,25 +201,12 @@
         <tr><td>MCAT Physics Prep</td><td>Physics review,problem types,testing strategy</td><td>Intensive or weekly</td></tr>
         <tr><td>Conceptual</td><td>Relativity, quantum ideas, nonlinear dynamics/chaos, problem-solving labs</td><td>Weekly or drop-in</td></tr>
       </table>
-      <!-- <a id="book-calendly" class="btn" href="#">Book with Calendly</a>-->
+
+      <!-- Book button (opens popup) -->
+      <a id="book-calendly" class="btn" href="#">Book with Calendly</a>
     </section>
 
-    <!-- Lazy inline Calendly calendar -->
-    <section id="booking" class="panel" aria-label="Book a session inline">
-      <h2>📅 Book a Session</h2>
-
-      <!-- Lazy target: skeleton + button until user scrolls/clicks -->
-      <div id="cal-slot" style="min-height:720px; margin-top:12px;">
-        <div id="cal-skeleton" class="cal-skeleton" role="status" aria-label="Loading calendar…"></div>
-        <button id="cal-load-btn" class="btn" style="display:block;margin:14px auto 0;text-align:center;">
-          Load Calendar
-        </button>
-      </div>
-
-      <p style="font-size:10px;color:#ccfff6;margin-top:8px;">
-        Trouble loading? <a href="https://calendly.com/jeffnechleba/physics-tutoring-session" target="_blank" style="color:yellow;">Open in a new tab</a>.
-      </p>
-    </section>
+    <!-- Removed inline Calendly calendar to speed load -->
 
     <section id="contact" class="panel">
       <h2>💾 Contact</h2>
@@ -331,7 +309,16 @@
       apple.addEventListener('animationend', ()=>{ setTimeout(()=>apple.remove(), 700); });
     }
 
-    /* Floating Calendly badge — original neon scheme */
+    /* Book button → Calendly popup */
+    document.getElementById('book-calendly')?.addEventListener('click', function(e){
+      e.preventDefault();
+      Calendly.initPopupWidget({
+        url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00'
+      });
+      return false;
+    });
+
+    /* Floating Calendly badge — keep original neon scheme */
     window.addEventListener('load', function() {
       function initBadge() {
         Calendly.initBadgeWidget({
@@ -380,68 +367,6 @@
       document.querySelectorAll('.calendly-overlay, .calendly-popup').forEach(el => el.remove());
     }
     setTimeout(nukeCalendlyOverlay, 2000);
-
-    /* ---- LAZY INLINE CALENDLY ---- */
-    (function(){
-      const SLOT = document.getElementById('cal-slot');
-      const SKELETON = document.getElementById('cal-skeleton');
-      const BTN = document.getElementById('cal-load-btn');
-      let mounted = false;
-
-      function mountInline(){
-        if (mounted) return;
-        mounted = true;
-
-        function doInit(){
-          try {
-            Calendly.initInlineWidget({
-              url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00',
-              parentElement: SLOT
-            });
-            // hide skeleton once iframe appears
-            const stop = setInterval(()=>{
-              if (SLOT.querySelector('iframe')){
-                if (SKELETON) SKELETON.style.display = 'none';
-                if (BTN) BTN.style.display = 'none';
-                clearInterval(stop);
-              }
-            }, 150);
-            setTimeout(()=>clearInterval(stop), 8000);
-          } catch(e) {
-            setTimeout(doInit, 200);
-          }
-        }
-
-        if (window.Calendly && Calendly.initInlineWidget) doInit();
-        else {
-          const t = setInterval(()=>{
-            if (window.Calendly && Calendly.initInlineWidget){
-              clearInterval(t); doInit();
-            }
-          }, 200);
-          setTimeout(()=>clearInterval(t), 6000);
-        }
-      }
-
-      // Load on button click
-      BTN?.addEventListener('click', mountInline);
-
-      // Load when visible (user scrolls near it)
-      if ('IntersectionObserver' in window){
-        const io = new IntersectionObserver((entries)=>{
-          entries.forEach(e=>{
-            if (e.isIntersecting) {
-              mountInline();
-              io.disconnect();
-            }
-          });
-        }, { rootMargin: '200px 0px' });
-        io.observe(SLOT);
-      } else {
-        // Fallback: time-based lazy init
-        window.addEventListener('load', ()=> setTimeout(mountInline, 1500));
-      }
-    })();
   </script>
 </body>
 </html>
