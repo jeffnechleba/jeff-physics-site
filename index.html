@@ -313,7 +313,7 @@
     document.getElementById('book-calendly')?.addEventListener('click', function(e){
       e.preventDefault();
       Calendly.initPopupWidget({
-        url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00'
+        url: 'https://calendly.com/jeffnechleba?hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00'
       });
       return false;
     });
@@ -322,7 +322,7 @@
     window.addEventListener('load', function() {
       function initBadge() {
         Calendly.initBadgeWidget({
-          url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_event_type_details=1&hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00',
+          url: 'https://calendly.com/jeffnechleba/?hide_event_type_details=1&hide_gdpr_banner=1&background_color=000000&text_color=00ffcc&primary_color=ffff00',
           text: '📅 Book a Session with Jeff',
           color: '#00ffcc',
           textColor: '#000000',
@@ -353,7 +353,7 @@
         window.__calWarm = true;
         try {
           Calendly?.initPopupWidget?.({
-            url: 'https://calendly.com/jeffnechleba/physics-tutoring-session?hide_gdpr_banner=1'
+            url: 'https://calendly.com/jeffnechleba?hide_gdpr_banner=1'
           });
           Calendly?.closePopupWidget?.(); // close immediately; just warming connections
         } catch(e){}
